@@ -1,0 +1,81 @@
+<mat-toolbar color="primary" class="sticky">
+  <mat-toolbar-row fxLayoutAlign="space-between center">
+    <div fxLayout="row">
+      <button mat-button routerLink="">
+        <mat-icon>home</mat-icon>
+        <span class="logo">Angular SAAS</span>
+      </button>
+      <div *ngIf="!showmobileMenu" fxLayout="row">
+        <ng-container *ngIf="!isUserLoggedIn">
+          <button
+            mat-button
+            *ngFor="let item of menuItems"
+            [routerLink]="item.link"
+          >
+            <mat-icon class="mr">{{ item.icon }}</mat-icon>
+            {{ item.label }}
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="isUserLoggedIn">
+          <button
+            mat-button
+            *ngFor="let item of menuItems_loggedIn"
+            [routerLink]="item.link"
+          >
+            <mat-icon class="mr">{{ item.icon }}</mat-icon>
+            {{ item.label }}
+          </button>
+        </ng-container>
+      </div>
+    </div>
+    <div>
+      <ng-container *ngIf="!isUserLoggedIn">
+        <button
+          mat-button
+          *ngFor="let item of fixedmenuItems"
+          [routerLink]="item.link"
+        >
+          <mat-icon class="mr">{{ item.icon }}</mat-icon>
+          {{ item.label }}
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="isUserLoggedIn">
+        <button
+          mat-button
+          *ngFor="let item of fixedmenuItems_loggedIn"
+          [routerLink]="item.link"
+        >
+          <mat-icon class="mr">{{ item.icon }}</mat-icon>
+          {{ item.label }}
+        </button>
+      </ng-container>
+
+      <button *ngIf="showmobileMenu" mat-button [matMenuTriggerFor]="menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-menu #menu="matMenu" fxLayoutAlign="end">
+  <ng-container *ngIf="!isUserLoggedIn">
+    <button
+      mat-menu-item
+      *ngFor="let item of menuItems"
+      [routerLink]="item.link"
+    >
+      {{ item.label }}
+    </button>
+  </ng-container>
+  <ng-container *ngIf="isUserLoggedIn">
+    <button
+      mat-menu-item
+      *ngFor="let item of menuItems_loggedIn"
+      [routerLink]="item.link"
+    >
+      {{ item.label }}
+    </button>
+  </ng-container>
+</mat-menu>

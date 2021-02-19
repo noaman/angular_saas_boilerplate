@@ -1,0 +1,92 @@
+<div class="main-wrapper" fxLayout="row" fxLayoutAlign="center center">
+  <mat-card class="box">
+    <mat-card-header>
+      <mat-card-title>Sign Up</mat-card-title>
+    </mat-card-header>
+    <ng-container *ngIf="signupSuccess">
+    
+        <mat-card-content>
+          Your registration step is successfull, in order to complete the process please wait for verfication email 
+          </mat-card-content>
+          
+    </ng-container>
+    <ng-container *ngIf="!signupSuccess">
+    <form
+      class="example-form"
+      [formGroup]="registrationForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+      <mat-card-content>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="email" formControlName="email" />
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <input
+            matInput
+            placeholder="Validate Email"
+            formControlName="email_validation"
+          />
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <input
+            type="password"
+            matInput
+            placeholder="password"
+            formControlName="password"
+          />
+        </mat-form-field>
+
+        <ng-container *ngIf="signupError">
+          <div style='color:red'>
+            {{signupErrMsg}}
+          </div>
+        </ng-container>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" class="btn-block"  [disabled]="!registrationForm.valid">
+          Sign Up
+        </button>
+      </mat-card-actions>
+    </form>
+
+    <mat-divider> </mat-divider>
+    <mat-card-actions fxLayoutAlign="center center">
+      <div fxLayout="column" fxLayoutAlign="center center">
+        <h4 mat-line>OR</h4>
+
+        <button class="social_button social_google" (click)="googleSignin()">
+          <fa-icon [icon]="googleIcon"></fa-icon> Sign up using Google
+        </button>
+     
+        <!-- <button class="social_button social_facebook" (click)="facebookSignin()">
+          <fa-icon [icon]="fbIcon"></fa-icon> Sign up using Facebook
+        </button> -->
+      </div>
+    </mat-card-actions>
+
+    <mat-card-actions fxLayoutAlign="center center">
+      <div fxLayout="row" fxLayoutAlign="center" style="margin-top: 10px">
+        Already have an account? <a href="signin">Log in</a>
+      </div>
+    </mat-card-actions>
+
+    <mat-divider> </mat-divider>
+
+    <mat-card-footer fxLayoutAlign="center center">
+      <div style="font-size: 0.75em; text-align: center">
+        By clicking “Sign up”, you agree to our <br />
+        <a href="tos" target="_new">terms of service</a>,
+        <a href="privacy" target="_new">privacy policy</a> &
+        <a href="cookies" target="_new">cookie policy</a> policy
+      </div>
+    </mat-card-footer>
+
+  </ng-container>
+
+
+  </mat-card>
+</div>

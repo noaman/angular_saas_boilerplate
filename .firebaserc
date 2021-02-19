@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "testproject-6fb62": {
+      "hosting": {
+        "linksmaster": [
+          "testproject-6fb62"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "saas-base-975c3"
+  }
+}
