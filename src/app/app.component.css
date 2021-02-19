@@ -1,3 +1,21 @@
 .content{
-    padding:10px;
+    margin: 0%;
+    background-color: #cecece;
 }
+
+
+.fixed {
+    position: absolute;
+    background-color: transparent !important;
+    top: 0;
+    z-index: 5;
+    
+    align-content: center;
+    color: #fff;
+  }
+  .sticky {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    z-index: 5;
+  }

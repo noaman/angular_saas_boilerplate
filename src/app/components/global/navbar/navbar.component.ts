@@ -96,7 +96,7 @@ export class NavbarComponent implements OnInit,OnChanges {
   fixedmenuItems_loggedIn: MenuItem[] = [
    
     {
-      label: 'Sign Out',
+      label: 'Sign out',
       link:'signout',
       icon: 'person_outline',
       showOnMobile: true,
