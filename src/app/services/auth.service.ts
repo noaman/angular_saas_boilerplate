@@ -1,12 +1,12 @@
 import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from "@angular/fire/auth";
-import { Router } from '@angular/router';
+import { ResolveStart, Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import { Observable,of} from 'rxjs';
 import { User } from '../models/user';
 import { switchMap } from 'rxjs/operators';
-import { AngularFirestore,AngularFirestoreDocument } from '@angular/fire/firestore';
-
+import { AngularFirestore,AngularFirestoreCollection,AngularFirestoreDocument } from '@angular/fire/firestore';
+import { Roles } from "../models/roles";
 
 
 @Injectable({
@@ -14,28 +14,35 @@ import { AngularFirestore,AngularFirestoreDocument } from '@angular/fire/firesto
 })
 export class AuthService {
   userData: any;
-
+  isUserLoggedIN:boolean;
 
   constructor( private afAuth: AngularFireAuth,private afs: AngularFirestore,public router:Router,
     public ngZone: NgZone
     ) { 
-      
-      this.afAuth.authState.subscribe(user => {
-        if (user) {
-          this.userData = user;
-          localStorage.setItem('user', JSON.stringify(this.userData));
-          JSON.parse(localStorage.getItem('user'));
-        } else {
-          localStorage.setItem('user', null);
-          JSON.parse(localStorage.getItem('user'));
-        }
-      })
+      this.isUserLoggedIN=false;
+
+      console.log("IN CONSTRUCTORE");
+      this.checkUserFromLocalStorage();
+      // this.afAuth.authState.subscribe(user => {
+      //   if (user) {
+      //     this.userData = user;
+      //     localStorage.setItem('user', JSON.stringify(this.userData));
+      //     JSON.parse(localStorage.getItem('user'));
+      //   } else {
+      //     localStorage.setItem('user', null);
+      //     JSON.parse(localStorage.getItem('user'));
+      //   }
+      // })
   
 
   }
   
+  getCurrentUser()
+  {
+    return this.userData;
+  }
 
-  setUserToLocaStorage(user:User)
+  setUserToLocaStorage(user:any)
   {
     this.userData = user;
         localStorage.setItem('user', JSON.stringify(this.userData));
@@ -45,13 +52,11 @@ export class AuthService {
 
   // Sign up with email/password
   SignUp(email:string, password:string) {
-    
     let resp:any;
-
     return this.afAuth.createUserWithEmailAndPassword(email, password)
     .then((result) => {
       this.SendVerificationMail();
-      this.updateUserData(result.user);
+      this.updateUserData(result.user,false);
         return {type:"success",error:"none"};
     }).catch((err) => {
       return {type:"error",error:err};
@@ -71,38 +76,39 @@ export class AuthService {
   // Sign in with email/password
   SignIn(email:string, password:string) {
     return this.afAuth.signInWithEmailAndPassword(email, password)
-    .then((result) => {
-      this.setUserToLocaStorage(result.user);
-      if(this.isLoggedIn()===true)
-       this.router.navigate(['dashboard']);
+    .then(async (result) => {
+      await this.updateUserData(result.user,true);
+      this.isUserLoggedIN=true;
+      console.log("Going to dashboard");
+      this.router.navigate(['dashboard']);
     }).catch((err) => {
+      console.log("error in signin in");
+      console.log(err);
       return err;
     });
     
   }
 
   googleSignin() {
-   
   let provider = new firebase.default.auth.GoogleAuthProvider();
-  provider.addScope('profile');
-  provider.addScope('email');
-  this.AuthLogin(provider);
+    provider.addScope('profile');
+    provider.addScope('email');
+    this.AuthLogin(provider);
   }
 
  
   AuthLogin(provider:any) {
     return this.afAuth.signInWithPopup(provider)
     .then((result) => {
-       this.ngZone.run(() => {
-     
-          this.updateUserData(result.user);
-         
-            this.setUserToLocaStorage(result.user);
-           if(this.isLoggedIn()===true)
-            this.router.navigate(['dashboard']);
+       this.ngZone.run(async () => {
+          await this.updateUserData(result.user,true);
+          this.isUserLoggedIN=true;
+          console.log("Going to dashboard");
+          this.router.navigate(['dashboard']);
         })
-        
     }).catch((error) => {
+      console.log("auth login error");
+      console.log(error);
       window.alert(error)
     })
   }
@@ -114,22 +120,49 @@ export class AuthService {
   }
 
 
-  private updateUserData(user:User) {
-    // Sets user data to firestore on login
+  private  async updateUserData(user:User,addTostorage:boolean) {
+
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.email}`);
-    const data = { 
-      uid: user.uid, 
-      email: user.email, 
-      displayName: user.displayName, 
-      photoURL: user.photoURL,
-      emailVerified: user.emailVerified
-    } 
-    return userRef.set(data, { merge: true })
+
+    const userDBRef:AngularFirestoreCollection=this.afs.collection('users');
+    
+    let number_docs=0;
+    await this.afs.collection("users").valueChanges().subscribe(data=>{
+      console.log("number of documents");
+      number_docs=data.length;
+      console.log(number_docs);
+    });
+    
+    userRef.ref.get().then(data=>{
+      let usrData:User=data.data();
+
+      if(usrData===undefined)///when the user records does not exist on firebase
+      {
+        usrData= { 
+          uid: user.uid, 
+          email: user.email, 
+          displayName: user.displayName, 
+          photoURL: user.photoURL,
+          emailVerified: user.emailVerified,
+          role:number_docs===0?Roles.SUPERADMIN:Roles.USER,
+        } 
+        userRef.set(usrData, { merge: true });//add the user data to firebase
+      }
+      if(addTostorage){
+        localStorage.removeItem('user');
+        this.setUserToLocaStorage(usrData);
+      }
+      
+    });
+
+    return true;
   }
 
+
   public signOut() {
-    return this.afAuth.signOut().then(() => {
-      localStorage.removeItem('user');
+    return this.afAuth.signOut().then(async () => {
+      await localStorage.removeItem('user');
+      this.isUserLoggedIN=false;
        this.router.navigate(['signin']);
    
     })
@@ -145,17 +178,29 @@ export class AuthService {
       return {type:"error",error:err};
     })
   }
-
-  isLoggedIn(): boolean {
-     
+  checkUserFromLocalStorage()
+  {
     const user = JSON.parse(localStorage.getItem('user'));
+    console.log("user from json");
+    console.log(user);
     if (user !== null && user.emailVerified !== false) 
     {
-   
-      return true;
+      this.userData = user;
+      this.isUserLoggedIN=true;
     }
-  
-    return false;
+    
+  }
+  isLoggedIn(): boolean {
+     
+    // const user = JSON.parse(localStorage.getItem('user'));
+    // console.log("user from json");
+    // console.log(user);
+    // if (user !== null && user.emailVerified !== false) 
+    // {
+    //   return true;
+    // }
+    // return false;
+    return this.isUserLoggedIN;
   }
 
   isRegisteredButEmailNotVerified(): boolean {
@@ -169,6 +214,13 @@ export class AuthService {
   
     return false;
   }
+
+
+
+
+  ///// Role-based Authorization //////
+
+  
 
 
 

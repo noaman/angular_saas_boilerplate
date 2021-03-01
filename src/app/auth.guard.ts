@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { AuthService } from './services/auth.service';
 
 import { tap, map, take } from 'rxjs/operators';
+import { Roles } from './models/roles';
+import { User } from './models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +31,21 @@ export class AuthGuard implements CanActivate {
     }
     return true;
    
+  }
+  
+
+
+   /**
+   * Check if a user is authenticated
+   * @param {string[]} allowedUserRoles - These user roles have the permissions to access the route.
+   * @returns {Promise<boolean>} True if user is authenticated otherwise false
+   */
+  private checkPermission(allowedUserRoles: Roles[]): boolean {
+
+    let usr:User = this.auth.getCurrentUser();
+ 
+
+    return false;
   }
   
 }

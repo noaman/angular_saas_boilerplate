@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MenuItem } from 'src/app/interfaces/menu-item';
+import { User } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -9,8 +10,10 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class NavbarComponent implements OnInit,OnChanges {
 
+  homelink:string='/';
   @Input() deviceType: String='lg';
   @Input() isUserLoggedIn: boolean=false;
+  @Input() user: User;
 
   showmobileMenu :boolean=false;
 
@@ -58,7 +61,7 @@ export class NavbarComponent implements OnInit,OnChanges {
     {
       label: 'Sign Up',
       link:'signup',
-      icon: 'person_outline',
+      icon: '',
       showOnMobile: true,
       showOnTablet: true,
       showOnDesktop: true
@@ -67,7 +70,7 @@ export class NavbarComponent implements OnInit,OnChanges {
     {
       label: 'Sign In',
       link:'signin',
-      icon: 'person',
+      icon: '',
       showOnMobile: true,
       showOnTablet: true,
       showOnDesktop: true
@@ -94,10 +97,54 @@ export class NavbarComponent implements OnInit,OnChanges {
     },
   ];
   fixedmenuItems_loggedIn: MenuItem[] = [
-   
+    {
+      label: 'Profile',
+      link:'profile',
+      icon: 'person_outline',
+      showOnMobile: true,
+      showOnTablet: true,
+      showOnDesktop: true
+    },
     {
       label: 'Sign out',
       link:'signout',
+      icon: 'person_outline',
+      showOnMobile: true,
+      showOnTablet: true,
+      showOnDesktop: true
+    },
+
+  ];
+
+
+  menuItems_superAdmin: MenuItem[] = [
+   
+    {
+      label: 'users',
+      link:'admin_users',
+      icon: 'person_outline',
+      showOnMobile: true,
+      showOnTablet: true,
+      showOnDesktop: true
+    },
+    {
+      label: 'config',
+      link:'admin_config',
+      icon: 'person_outline',
+      showOnMobile: true,
+      showOnTablet: true,
+      showOnDesktop: true
+    },
+
+  ];
+
+
+  menuItems_Admin: MenuItem[] = [
+   
+  
+    {
+      label: 'config',
+      link:'admin_config',
       icon: 'person_outline',
       showOnMobile: true,
       showOnTablet: true,
@@ -117,12 +164,23 @@ export class NavbarComponent implements OnInit,OnChanges {
             this.deviceType = changes[propName].currentValue;
             this.isMobileMenu();
         }
+        if(propName==="user")
+        {
+            this.user = changes[propName].currentValue;
+            // console.log("GOT THE USER");
+            // console.log(this.user.email);
+            // console.log(this.user.role);
+       
+        }
       }
   }
 
   ngOnInit(): void {
 
     this.isUserLoggedIn = this.authService.isLoggedIn();
+
+    if(this.isUserLoggedIn===true)
+      this.homelink='dashboard';
   }
 
   isMobileMenu()

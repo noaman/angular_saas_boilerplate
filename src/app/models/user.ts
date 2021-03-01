@@ -1,3 +1,5 @@
+import { Roles } from "./roles";
+
 export interface User {
     uid: string;
     email: string;
@@ -5,4 +7,6 @@ export interface User {
     displayName?: string;
     myCustomData?: string;
     emailVerified?:boolean;
+    role?:any;
 }
+

@@ -3,7 +3,7 @@
  
   <div fxFlex class="content">
     <div class="fixed sticky">
-      <app-navbar [deviceType]="deviceType" [isUserLoggedIn]="isUserLoggedIn()"></app-navbar>
+      <app-navbar [deviceType]="deviceType" [isUserLoggedIn]="isUserLoggedIn()" [user]="authService.getCurrentUser()"></app-navbar>
       </div>
       <router-outlet></router-outlet> 
       <ng-container *ngIf="isFooterShown()===true">

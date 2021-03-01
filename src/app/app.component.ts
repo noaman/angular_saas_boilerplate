@@ -3,7 +3,7 @@ import { MediaChange,MediaObserver } from '@angular/flex-layout';
 import { Subscription } from 'rxjs';
 import { AuthService } from './services/auth.service';
 import { Router,NavigationStart, Event as NavigationEvent } from '@angular/router';
-
+  
 
 @Component({
   selector: 'app-root',

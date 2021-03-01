@@ -17,6 +17,13 @@ import { CookiepolicyComponent } from './pages/cookiepolicy/cookiepolicy.compone
 import { PrivacypolicyComponent } from './pages/privacypolicy/privacypolicy.component';
 import { TocComponent } from './pages/toc/toc.component';
 
+import { Roles } from './models/roles';
+import { PagenotfoundComponent } from './pages/pagenotfound/pagenotfound.component';
+import { UserprofileComponent } from './pages/application/userprofile/userprofile.component';
+import { UsersadminComponent } from './pages/admin/usersadmin/usersadmin.component';
+import { config } from 'process';
+import { ConfigadminComponent } from './pages/admin/configadmin/configadmin.component';
+
 const routes: Routes = [
   {path:'',component:HomeComponent},
   {path:'feature1',component:Feature1Component},
@@ -33,7 +40,37 @@ const routes: Routes = [
   {path:'verifyemail',component:VerifyemailComponent},
   {path:'forgotpassword',component:ForgotpasswordComponent},
   {path:'signout',component:SignoutComponent},
-  {path:'dashboard',component:DashboardComponent,canActivate:[AuthGuard]},
+  {path:'dashboard',component:DashboardComponent,canActivate:[AuthGuard],
+  data: {
+    userRoles: [] // All User Can Access but must be login
+  }
+},
+
+{path:'profile',component:UserprofileComponent,canActivate:[AuthGuard],
+  data: {
+    userRoles: [] // All User Can Access but must be login
+  }
+},
+
+
+
+{path:'admin_users',component:UsersadminComponent,canActivate:[AuthGuard],
+  data: {
+    userRoles: [
+      [Roles.SUPERADMIN]
+    ] // All User Can Access but must be login
+  }
+},
+
+
+{path:'admin_config',component:ConfigadminComponent,canActivate:[AuthGuard],
+  data: {
+    userRoles: [
+      [Roles.ADMIN,Roles.SUPERADMIN]
+    ] // All User Can Access but must be login
+  }
+},
+{ path: '**', component: PagenotfoundComponent }, 
 
  
 ];

@@ -39,6 +39,11 @@ import { TocComponent } from './pages/toc/toc.component';
 import { PrivacypolicyComponent } from './pages/privacypolicy/privacypolicy.component';
 import { CookiepolicyComponent } from './pages/cookiepolicy/cookiepolicy.component';
 
+import { PagenotfoundComponent } from './pages/pagenotfound/pagenotfound.component';
+import { UserprofileComponent } from './pages/application/userprofile/userprofile.component';
+import { UsersadminComponent } from './pages/admin/usersadmin/usersadmin.component';
+import { ConfigadminComponent } from './pages/admin/configadmin/configadmin.component';
+
 
 
 @NgModule({
@@ -60,7 +65,15 @@ import { CookiepolicyComponent } from './pages/cookiepolicy/cookiepolicy.compone
     SignoutComponent,
     TocComponent,
     PrivacypolicyComponent,
-    CookiepolicyComponent
+    CookiepolicyComponent,
+ 
+    PagenotfoundComponent,
+ 
+    UserprofileComponent,
+ 
+    UsersadminComponent,
+ 
+    ConfigadminComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),
