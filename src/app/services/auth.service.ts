@@ -55,8 +55,9 @@ export class AuthService {
     let resp:any;
     return this.afAuth.createUserWithEmailAndPassword(email, password)
     .then((result) => {
-      this.SendVerificationMail();
       this.updateUserData(result.user,false);
+      this.SendVerificationMail();
+      
         return {type:"success",error:"none"};
     }).catch((err) => {
       return {type:"error",error:err};
@@ -67,6 +68,7 @@ export class AuthService {
   async SendVerificationMail() {
     (await this.afAuth.currentUser).sendEmailVerification().then(() => {
        // this.router.navigate(['verifyemail']);
+        
        return;
     });
   
@@ -77,10 +79,12 @@ export class AuthService {
   SignIn(email:string, password:string) {
     return this.afAuth.signInWithEmailAndPassword(email, password)
     .then(async (result) => {
-      await this.updateUserData(result.user,true);
-      this.isUserLoggedIN=true;
-      console.log("Going to dashboard");
-      this.router.navigate(['dashboard']);
+      console.log("in sign in");
+      console.log(result.user);
+       await this.updateUserData(result.user,true);
+       this.isUserLoggedIN=true;
+       console.log("Going to dashboard");
+       this.router.navigate(['dashboard']);
     }).catch((err) => {
       console.log("error in signin in");
       console.log(err);
@@ -148,6 +152,18 @@ export class AuthService {
         } 
         userRef.set(usrData, { merge: true });//add the user data to firebase
       }
+      else
+      {
+        usrData= { 
+          uid: user.uid, 
+          email: user.email, 
+          displayName: user.displayName, 
+          photoURL: user.photoURL,
+          emailVerified: user.emailVerified,
+          role:number_docs===0?Roles.SUPERADMIN:Roles.USER,
+        } 
+        userRef.update(usrData);//add the user data to firebase
+      }
       if(addTostorage){
         localStorage.removeItem('user');
         this.setUserToLocaStorage(usrData);
@@ -180,9 +196,7 @@ export class AuthService {
   }
   checkUserFromLocalStorage()
   {
-    const user = JSON.parse(localStorage.getItem('user'));
-    console.log("user from json");
-    console.log(user);
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user !== null && user.emailVerified !== false) 
     {
       this.userData = user;
